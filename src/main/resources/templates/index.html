@@ -19,6 +19,8 @@
             class="fas fa-users"> Zarejestruj się </i></a>
     <a th:if="${!userContext.poswiadczeniaUzytkownika.isEmpty()}" th:href="@{/wyloguj}" class="btn btn-danger"><i
             class="fas fa-sign-out-alt"> Wyloguj </i></a>
+    <br><br><a th:if="${!userContext.poswiadczeniaUzytkownika.isEmpty()}" th:href="@{/boss}" class="btn btn-success"><i
+            class="fas fa-dollar-sign"> Panel Właściciela </i></a>
     <section class="my-5">
         <div class="container">
             <div class="row">
@@ -31,7 +33,7 @@
                     Służymy Wam niezawodnym sprzętem bez względu na to czy potrzebujesz sprawnego miejskiego auta, czy youngtimera do wyjazdu na weekend.</p>
                     <p class="my-5">
                         <a href="/pojazdy" class="btn btn-primary"><i
-                                class="fas fa-car fa-2x" style="color:lightgray"><br>SPRAWDŹ NASZĄ OFERTĘ</i></a>
+                                class="fas fa-car fa-1x" style="color:lightgray"><br>SPRAWDŹ NASZĄ OFERTĘ</i></a>
                     </p>
                 </div>
             </div>

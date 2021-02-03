@@ -1,5 +1,6 @@
 package org.carRental;
 
+import org.carRental.dto.CarData;
 import org.carRental.dto.TransferData;
 import org.carRental.dto.UserContext;
 import org.carRental.dto.UserData;
@@ -12,11 +13,9 @@ import org.carRental.repository.PojazdRepository;
 import org.carRental.repository.RentsRepository;
 import org.carRental.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
@@ -24,6 +23,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Scope("prototype")
 @org.springframework.stereotype.Controller
 public class Controller {
 
@@ -47,9 +47,67 @@ public class Controller {
 
     @GetMapping(value = "/")
     public String start(Model model) {
-
         model.addAttribute("userContext",userContext);
         return "index";
+    }
+
+    @RequestMapping(value = "dodajPojazd", produces = "application/json",
+            method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST})
+       public String dodajPojazd(
+            @Valid CarData carData,
+               Model model) {
+
+        if (carData.getBrand()!= null){
+            pojazdRepository.save(new Pojazdy(carData.getBrand(),carData.getModel(),carData.getPower(),carData.getAvergeConsumption(),carData.getDailyAmount(),carData.getImageUrl()));
+            return "redirect:/boss";
+        }
+        model.addAttribute("carData", new CarData());
+        return "dodajPojazd";
+
+    }
+
+    @RequestMapping(value = "wyslijDoEdycji", produces = "application/json",
+            method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST})
+    public String dodajPojazd(
+            @Valid Pojazdy  pojazd) {
+
+           pojazdRepository.updateCar(pojazd.getId(),pojazd.getMarka(),pojazd.getModel(),pojazd.getMoc(),pojazd.getSrednieSpalanie(),pojazd.getCenaZaDobe(),pojazd.getMiniaturka());
+
+        return "redirect:/boss";
+
+    }
+
+
+    @GetMapping(value = "edytujPojazd/{id}")
+    public String edytujPojazd(@PathVariable("id") long id, Model model) {
+        Pojazdy pojazd = pojazdRepository.getOne(id);
+        model.addAttribute("pojazd", pojazd);
+        return "edytujPojazd";
+    }
+
+
+    @GetMapping(value = "usunPojazd/{id}")
+    public String usunPojazd(@PathVariable("id") long id, Model model) {
+        pojazdRepository.deleteById(id);
+        return "redirect:/boss";
+    }
+
+    @GetMapping(value = "/wyloguj")
+    public String wyloguj() {
+        userContext.setUserId(null);
+        userContext.setPoswiadczeniaUzytkownika("");
+        return "redirect:/";
+
+    }
+
+
+    @GetMapping(value = "/boss")
+    public String panelSzefa(Model model) {
+        if (userContext.getPoswiadczeniaUzytkownika().isEmpty()){
+            return "redirect:/";
+        }
+        model.addAttribute("pojazdy", pojazdRepository.findAll());
+        return "carDetails";
 
     }
 
@@ -95,10 +153,7 @@ public class Controller {
             userContext.setPoswiadczeniaUzytkownika(konta.get(0).getDaneLogowania());
             userContext.setUserId(konta.get(0).getOsoba().getId());
         }
-
-//        if (kontaRepository.findByCredentials(encodedString))
         Pojazdy one = pojazdRepository.getOne(transferData.getIdPojazdu());
-
         model.addAttribute("pojazdDoWynajecia", one);
         transferData.setIdPojazdu(one.getId());
         model.addAttribute("transferData", transferData);
