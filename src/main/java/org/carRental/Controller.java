@@ -15,12 +15,17 @@ import org.carRental.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Scope("prototype")
@@ -47,18 +52,26 @@ public class Controller {
 
     @GetMapping(value = "/")
     public String start(Model model) {
-        model.addAttribute("userContext",userContext);
+        model.addAttribute("userContext", userContext);
+        String role = "";
+        if (userContext.getUserId() != null) {
+            Osoby osoba = userRepository.getOne(userContext.getUserId());
+            role = kontaRepository.findByUser(osoba).getRola();
+        }
+        model.addAttribute("rola", role);
+
+
         return "index";
     }
 
     @RequestMapping(value = "dodajPojazd", produces = "application/json",
             method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST})
-       public String dodajPojazd(
+    public String dodajPojazd(
             @Valid CarData carData,
-               Model model) {
+            Model model) {
 
-        if (carData.getBrand()!= null){
-            pojazdRepository.save(new Pojazdy(carData.getBrand(),carData.getModel(),carData.getPower(),carData.getAvergeConsumption(),carData.getDailyAmount(),carData.getImageUrl()));
+        if (carData.getBrand() != null) {
+            pojazdRepository.save(new Pojazdy(carData.getBrand(), carData.getModel(), carData.getPower(), carData.getAvergeConsumption(), carData.getDailyAmount(), carData.getImageUrl()));
             return "redirect:/boss";
         }
         model.addAttribute("carData", new CarData());
@@ -66,12 +79,12 @@ public class Controller {
 
     }
 
-    @RequestMapping(value = "wyslijDoEdycji", produces = "application/json",
+    @RequestMapping(value = "wyslijDoEdycji/{id}", produces = "application/json",
             method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST})
-    public String dodajPojazd(
-            @Valid Pojazdy  pojazd) {
+    public String dodajPojazd(@PathVariable("id") long id,
+                              @Valid Pojazdy pojazd) {
 
-           pojazdRepository.updateCar(pojazd.getId(),pojazd.getMarka(),pojazd.getModel(),pojazd.getMoc(),pojazd.getSrednieSpalanie(),pojazd.getCenaZaDobe(),pojazd.getMiniaturka());
+        pojazdRepository.updateCar(id, pojazd.getMarka(), pojazd.getModel(), pojazd.getMoc(), pojazd.getSrednieSpalanie(), pojazd.getCenaZaDobe(), pojazd.getMiniaturka());
 
         return "redirect:/boss";
 
@@ -88,6 +101,7 @@ public class Controller {
 
     @GetMapping(value = "usunPojazd/{id}")
     public String usunPojazd(@PathVariable("id") long id, Model model) {
+        zrezygnuj(id);
         pojazdRepository.deleteById(id);
         return "redirect:/boss";
     }
@@ -100,10 +114,20 @@ public class Controller {
 
     }
 
+    @GetMapping(value = "/zrezygnuj/{id}")
+    public String zrezygnuj(@PathVariable("id") long id) {
+        Pojazdy pojazd = pojazdRepository.findById(id).get();
+        rentsRepository.deleteRentBasedOnCar(pojazd);
+
+        return "redirect:/pojazdy";
+
+    }
+
+
 
     @GetMapping(value = "/boss")
     public String panelSzefa(Model model) {
-        if (userContext.getPoswiadczeniaUzytkownika().isEmpty()){
+        if (userContext.getPoswiadczeniaUzytkownika().isEmpty()) {
             return "redirect:/";
         }
         model.addAttribute("pojazdy", pojazdRepository.findAll());
@@ -113,15 +137,20 @@ public class Controller {
 
     @GetMapping(value = "pojazdy")
     public String pokazPojazdy(Model model) {
-        String role = "";
+        List<Rents> rents = rentsRepository.findAll();
         model.addAttribute("pojazdy", pojazdRepository.findAll());
-        model.addAttribute("wynajmy", rentsRepository.findAll().stream().map(Rents::getPojazd).collect(Collectors.toList()));
+        model.addAttribute("wynajetePojazdy", rents.stream().map(Rents::getPojazd).collect(Collectors.toList()));
         if (userContext.getUserId() != null) {
-            role = kontaRepository.getOne(userContext.getUserId()).getRola();
+            Konta konto = kontaRepository.findByCredentials(userContext.getPoswiadczeniaUzytkownika());
+            List<Pojazdy> pojazdyWynajetePrzezUzytkownika = new ArrayList<>();
+            rents.forEach(rent -> {
+                if (konto.getOsoba() == rent.getKlient()){
+                    pojazdyWynajetePrzezUzytkownika.add(rent.getPojazd());
+                }
+            });
+            model.addAttribute("pojazdyWynajetePrzezUzytkownika", pojazdyWynajetePrzezUzytkownika);
+
         }
-        model.addAttribute("rola", role);
-
-
         return "dostepnePojazdy";
     }
 
@@ -146,12 +175,13 @@ public class Controller {
 
 
         String encodedUserDetails = AppUtils.encodeToBase64(userData);
-        List<Konta> konta = kontaRepository.findByCredentials(encodedUserDetails);
-        if (konta.size() == 0) {
+
+        Konta konto = kontaRepository.findByCredentials(encodedUserDetails);
+        if (konto==null) {
             return "zaloguj";
         } else {
-            userContext.setPoswiadczeniaUzytkownika(konta.get(0).getDaneLogowania());
-            userContext.setUserId(konta.get(0).getOsoba().getId());
+            userContext.setPoswiadczeniaUzytkownika(konto.getDaneLogowania());
+            userContext.setUserId(konto.getOsoba().getId());
         }
         Pojazdy one = pojazdRepository.getOne(transferData.getIdPojazdu());
         model.addAttribute("pojazdDoWynajecia", one);
@@ -167,10 +197,10 @@ public class Controller {
             @Valid UserData userData,
             Model model,
             RedirectAttributes redirectAttributes) {
-        if (userData.getLogin()!=null){
-            userRepository.save(new Osoby(userData.getImie(), userData.getNazwisko(),userData.getNumerDowodu(),userData.getNumerTelefonu()));
+        if (userData.getLogin() != null) {
+            userRepository.save(new Osoby(userData.getImie(), userData.getNazwisko(), userData.getNumerDowodu(), userData.getNumerTelefonu()));
             Osoby byNumerDowodu = userRepository.findByNumerDowodu(userData.getNumerDowodu());
-            kontaRepository.save(new Konta(byNumerDowodu, AppUtils.encodeToBase64(userData),"CLIENT") );
+            kontaRepository.save(new Konta(byNumerDowodu, AppUtils.encodeToBase64(userData), "CLIENT"));
             return "redirect:/";
         }
         model.addAttribute("userData", new UserData());
@@ -185,9 +215,6 @@ public class Controller {
             @Valid TransferData transferData,
             Model model,
             RedirectAttributes redirectAttributes) {
-/*
-        System.out.println(transferData.getIloscDni());
-        System.out.println(id);*/
 
         model.addAttribute("pojazdy", pojazdRepository.findAll());
         model.addAttribute("errorMessage", "Login failed");

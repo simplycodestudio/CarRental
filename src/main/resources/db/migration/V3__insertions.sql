@@ -20,7 +20,7 @@ VALUES ('1', 'Honda', 'Integra TYPE R', '207', '12', '150',
         'https://img.gta5-mods.com/q95/images/honda-integra-dc2-handling/4a2268-timg%20(2).jpg');
 INSERT INTO pojazdy (id, marka, model, moc, srednie_spalanie, cena_za_dobe, miniaturka)
 VALUES ('2', 'Renault', 'Clio', '110', '8', '90',
-        'https://lh3.googleusercontent.com/proxy/MLy9ocw2Wqvzw5vSYeYyHEMVhNSoaCxos7FwzDVV2mw7MKD4IBbiJpAyDyw3MYsU0ahSioYvBUjalF0ZgfgWYzNhcznOAUu-B5Pg79zdB713c5F9CW-TOV6nO3ruRbQtbLQ');
+        'https://upload.wikimedia.org/wikipedia/commons/f/f0/2019_Renault_Clio_Iconic_TCE_1.0_Front.jpg');
 INSERT INTO pojazdy (id, marka, model, moc, srednie_spalanie, cena_za_dobe, miniaturka)
 VALUES ('3', 'Ford', 'Mustang', '375', '15', '280',
         'https://motohigh.pl/wp-content/uploads/2020/04/Ford-Mustang_GT-2018-1024-0d.jpg');
@@ -38,10 +38,10 @@ VALUES ('7', 'Mercedes', 'C220', '170', '9', '130',
         'https://media.autoexpress.co.uk/image/private/s--ctJBoyrv--/v1579703511/autoexpress/2018/09/1_.jpg');
 INSERT INTO pojazdy (id, marka, model, moc, srednie_spalanie, cena_za_dobe, miniaturka)
 VALUES ('8', 'Renault', 'Twizy', '7', '=|=', '70',
-        'https://bi.im-g.pl/im/2d/79/d6/z14055725Q,Renault-Twizy.jpg');
+        'https://upload.wikimedia.org/wikipedia/commons/6/63/Eng_Renault_Twizy_ZE.jpg');
 INSERT INTO pojazdy (id, marka, model, moc, srednie_spalanie, cena_za_dobe, miniaturka)
 VALUES ('9', 'Seat', 'Leon cupra', '225', '12', '150',
-        'https://lh3.googleusercontent.com/proxy/t2ywpG2Ncwfu0hMfmXbRLTO81N48fbkPb_hOPPmAQsBvWG59ogE7OtzIgKX9vnlL4lb8xLlxJ7qmAuyYRmwxH7HSlKNuYYUD4KWLAQmgjN2NThkD');
+        'https://mklr.pl/uimages/services/motokiller/i18n/pl_PL/201409/1409830044_by_Ivan303.jpg?1409862532');
 INSERT INTO pojazdy (id, marka, model, moc, srednie_spalanie, cena_za_dobe, miniaturka)
 VALUES ('10', 'Audi', 'A4', '220', '11', '200',
         'https://i.wpimg.pl/985x0/m.autokult.pl/audi-a4-to-c7b33837cde1c592379b2.jpg');
@@ -56,7 +56,7 @@ VALUES ('13', 'Mazda', 'RX8', '231', '17', '185',
         'https://www.autocentrum.pl/ac-file/article/5dcd343d583a0f4d752b9a96.jpg');
 INSERT INTO pojazdy (id, marka, model, moc, srednie_spalanie, cena_za_dobe, miniaturka)
 VALUES ('14', 'Honda', 'CRX', '150', '11', '150',
-        'https://bi.im-g.pl/im/7/9549/z9549467Q,Honda-CRX.jpg');
+        'https://ocdn.eu/pulscms-transforms/1/HEfk9kpTURBXy8yMWI2OGY4MmE5MzczNmRkMTY0NTY3M2ExZjRlY2M5Mi5qcGeSlQLNAaQAwsOVAgDNARjCw4GhMAE');
 
 
 -- -----------------------------------------------------

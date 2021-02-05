@@ -13,7 +13,9 @@
     <div>
         <img class="img-fluid" th:src="${'https://www.lufthansa.com/content/dam/lh/images/local_images/ancillary/lh_anc_car_pano_XL_en.jpg.transform/lh-dcep-transform-width-1440/img.jpg'}" />
     </div>
-    <form th:action="@{/wyslijDoEdycji}" method="post" th:object="${pojazd}" style="max-width: 350px; margin: 0 auto;">
+
+
+    <form th:action="@{/wyslijDoEdycji/{id}(id=${pojazd.id})}" method="post" th:object="${pojazd}" style="max-width: 350px; margin: 0 auto;">
         <div class="border border-secondary p-3 rounded">
             <p><b>DODAJ POJAZD</b></p>
             <p>

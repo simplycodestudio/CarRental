@@ -39,10 +39,6 @@
     <div class="card">
         <div class="card-body">
             <div th:switch="${pojazdy}" class="container my-5">
-                <p class="my-5">
-                    <a th:if="${rola.equalsIgnoreCase('boss')}" href="/students/signup" class="btn btn-primary"><i
-                            class="fas fa-car"> Dodaj Pojazd </i></a>
-                </p>
                 <div class="col-md-14">
                     <h2 th:case="null">Brak pojazdów w bazie!</h2>
                     <div th:case="*">
@@ -68,12 +64,16 @@
                                 <td><a th:href="${pojazd.miniaturka}"><img th:src="${pojazd.miniaturka}" th:width="200"
                                                                            th:height="124"/></a></td>
 
-                                <td><a th:unless="${wynajmy.contains(pojazd)}"
+                                <td><a th:unless="${wynajetePojazdy.contains(pojazd)}"
                                        th:href="@{/wynajmij/{id}(id=${pojazd.id})}"
                                        class="btn btn-success" style="color:gray;"><i class="fas fa-key fa-2x" style="color:white"></i></a>
-                                    <a th:if="${wynajmy.contains(pojazd)}"
-
+                                    <a th:if="${wynajetePojazdy.contains(pojazd)}"
                                        class="btn btn-secondary" style="color:gray;"><i class="fas fa-key fa-2x" style="color:white;"></i></a>
+                                    <a th:if="${pojazdyWynajetePrzezUzytkownika != null}">
+                                        <a th:if="${pojazdyWynajetePrzezUzytkownika.size()>0}">
+
+                                        <a th:if="${pojazdyWynajetePrzezUzytkownika.contains(pojazd)}"  th:href="@{/zrezygnuj/{id}(id=${pojazd.id})}"
+                                       class="btn btn-danger" style="color:gray;"><i class="fas fa-times fa-2x" style="color:white;"></i></a></a></a>
                                 </td>
                             </tr>
                             </tbody>

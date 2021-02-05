@@ -19,7 +19,7 @@
             class="fas fa-users"> Zarejestruj się </i></a>
     <a th:if="${!userContext.poswiadczeniaUzytkownika.isEmpty()}" th:href="@{/wyloguj}" class="btn btn-danger"><i
             class="fas fa-sign-out-alt"> Wyloguj </i></a>
-    <br><br><a th:if="${!userContext.poswiadczeniaUzytkownika.isEmpty()}" th:href="@{/boss}" class="btn btn-success"><i
+    <br><br><a th:if="${rola.equalsIgnoreCase('boss')}" th:href="@{/boss}" class="btn btn-success"><i
             class="fas fa-dollar-sign"> Panel Właściciela </i></a>
     <section class="my-5">
         <div class="container">
