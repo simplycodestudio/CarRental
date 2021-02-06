@@ -81,7 +81,7 @@ public class Controller {
 
     @RequestMapping(value = "wyslijDoEdycji/{id}", produces = "application/json",
             method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST})
-    public String dodajPojazd(@PathVariable("id") long id,
+    public String wyslijDoEdycji(@PathVariable("id") long id,
                               @Valid Pojazdy pojazd) {
 
         pojazdRepository.updateCar(id, pojazd.getMarka(), pojazd.getModel(), pojazd.getMoc(), pojazd.getSrednieSpalanie(), pojazd.getCenaZaDobe(), pojazd.getMiniaturka());
@@ -170,8 +170,7 @@ public class Controller {
             method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST})
     public String zaloguj(
             @Valid UserData userData,
-            Model model,
-            RedirectAttributes redirectAttributes) {
+            Model model) {
 
 
         String encodedUserDetails = AppUtils.encodeToBase64(userData);
@@ -195,8 +194,7 @@ public class Controller {
             method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST})
     public String zarejestruj(
             @Valid UserData userData,
-            Model model,
-            RedirectAttributes redirectAttributes) {
+            Model model) {
         if (userData.getLogin() != null) {
             userRepository.save(new Osoby(userData.getImie(), userData.getNazwisko(), userData.getNumerDowodu(), userData.getNumerTelefonu()));
             Osoby byNumerDowodu = userRepository.findByNumerDowodu(userData.getNumerDowodu());
@@ -213,12 +211,10 @@ public class Controller {
     public String potwierdz(
             @PathVariable("id") long idPojazdu,
             @Valid TransferData transferData,
-            Model model,
-            RedirectAttributes redirectAttributes) {
+            Model model) {
 
         model.addAttribute("pojazdy", pojazdRepository.findAll());
         model.addAttribute("errorMessage", "Login failed");
-
         Osoby customer = userRepository.getOne(userContext.getUserId());
         Pojazdy pojazd = pojazdRepository.getOne(idPojazdu);
         rentsRepository.save(new Rents(pojazd, customer, LocalDate.now().plusDays(transferData.getIloscDni())));
